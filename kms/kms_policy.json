@@ -1,0 +1,50 @@
+{
+  "Version": "2012-10-17",
+  "Id": "my_new_key_policy",
+  "Statement": [
+    {
+      "Sid": "RootAccess",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::ACCOUNT NUMBER:root"
+      },
+      "Action": "kms:*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "Allow S3 Service",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "s3.amazonaws.com"
+      },
+      "Action": [
+        "kms:Encrypt",
+        "kms:Decrypt",
+        "kms:GenerateDataKey*"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "kms:ViaService": "s3.us-east-1.amazonaws.com",
+          "aws:SourceAccount": "ACCOUNT NUMBER"
+        }
+      }
+    },
+    {
+      "Sid": "AllowLambdaAndGlue",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": [
+          "S3-LAMBDA-S3-GLUE ROLE'S ARN",
+          "S3-GLUE-S3 ROLE'S ARN"
+        ]
+      },
+      "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

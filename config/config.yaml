@@ -1,0 +1,57 @@
+project:
+  name: commerce-data-pipeline
+  environment: dev
+
+s3:
+  bucket: commerce-processing
+  layers:
+    bronze: bronze_commerce/
+    silver: silver_commerce/
+    gold: gold_commerce/
+    
+  bucket: aws-glue-assets-commerce_processing
+  layers:
+    glue_script: script/
+    spark_history: sparkHistory/
+    tmp: tmp/
+
+ingestion:
+  expected_files:
+    - users.json
+    - events.json
+    - orders.json
+  allowed_extensions:
+    - json
+  data_generation_script: scripts/
+
+iam:
+    lambda_role:
+        role_name: s3-lambda-s3-glue
+        policy_script: iam/lambda_execution_policy.json
+        
+    glue_role:
+        role_name: s3-glue-s3
+        policy_script: iam/glue_policy.json
+        
+kms:
+    policy_script: kms/key_policy.json   
+        
+lambda:
+  bronze_to_silver:
+    function_name: commerce_data_validation
+    timeout_seconds: 300
+    memory_mb: 1024
+
+glue:
+  job_name: silver_commerce_transformation
+  worker_type: G.1X
+  number_of_workers: 2
+  script_location: glue/silver_to_gold/user_activity_job.py
+  temp_dir: arn:aws:s3:::aws-glue-assets-commerce_processing
+
+output:
+  format: parquet
+  dataset_name: user_activity
+
+logging:
+  level: INFO

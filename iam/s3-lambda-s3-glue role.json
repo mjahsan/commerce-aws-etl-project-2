@@ -1,0 +1,33 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ReadFromS3",
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::commerce-processing",
+                "arn:aws:s3:::commerce-processing/*"
+            ]
+        },
+        {
+            "Sid": "UseKMSKey",
+            "Effect": "Allow",
+            "Action": [
+                "kms:Decrypt",
+                "kms:GenerateDataKey"
+            ],
+            "Resource": ">>>KEY ARN HERE<<<<"
+        },
+        {
+            "Sid": "StartGlueJob",
+            "Effect": "Allow",
+            "Action": "glue:StartJobRun",
+            "Resource": ">>>GLUE JOB ARN HERE<<<<"
+        }
+    ]
+}
